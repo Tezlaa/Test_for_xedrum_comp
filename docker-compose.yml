@@ -1,0 +1,25 @@
+services:
+  database-test:
+    image: postgres
+    volumes:
+      - database:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: always
+
+  web-app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+    depends_on:
+      - database-test
+    command: >
+      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    restart: always
+
+volumes:
+  database:
